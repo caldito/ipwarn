@@ -1,0 +1,40 @@
+#!/bin/bash
+
+main(){
+    NEWIP="$(curl -s icanhazip.com)"
+
+    if [ ! -d /etc/ipwarn ]; then
+        mkdir /etc/ipwarn
+    fi
+    if [ ! -f /etc/ipwarn/ipwarn.conf ]; then
+        echo 'TEL_TOKEN=""' >> /etc/ipwarn/ipwarn.conf
+        echo 'TEL_ID=""' >> /etc/ipwarn/ipwarn.conf
+	echo 'GD_DOMAIN=""' >> /etc/ipwarn/ipwarn.conf
+        echo 'GD_NAME="@"' >> /etc/ipwarn/ipwarn.conf
+        echo 'GD_TYPE="A"' >> /etc/ipwarn/ipwarn.conf
+        echo 'GD_KEY=""' >> /etc/ipwarn/ipwarn.conf
+        echo 'GD_SECRET=""' >> /etc/ipwarn/ipwarn.conf
+	echo "edit /etc/ipwarn.conf to configure warning channels"
+    fi
+
+    IP=$(cat /etc/ipwarn/ip 2> /dev/null)
+    if [ "$NEWIP" != "$IP" ]; then
+        source /etc/ipwarn/ipwarn.conf
+        echo $NEWIP > /etc/ipwarn/ip
+        echo "New ip is $NEWIP"
+    
+        #Telegram
+        result="$(curl -s -X POST "https://api.telegram.org/bot$TEL_TOKEN/sendMessage" -d chat_id=$TEL_ID -d text="New ip is $NEWIP")"
+        echo "Telegram warning sent"
+
+        #GoDaddy
+        curl -s -X PUT "https://api.godaddy.com/v1/domains/${GD_DOMAIN}/records/${GD_TYPE}/${GD_NAME}" \
+	    -H "Authorization: sso-key ${GD_KEY}:${GD_SECRET}" \
+	    -H "Content-Type: application/json" \
+	    -d "[{\"data\": \"${NEWIP}\"}]"
+	echo "GoDaddy record updated"
+    fi
+}
+
+main
+
