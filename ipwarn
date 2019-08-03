@@ -1,26 +1,15 @@
 #!/bin/bash
 
 main(){
+    if [ "$(whoami)" != "root" ]; then
+        echo "This program should be executed as root. Exiting"
+        exit 1
+    fi
     NEWIP="$(curl -s icanhazip.com)"
-
-    if [ ! -d /etc/ipwarn ]; then
-        mkdir /etc/ipwarn
-    fi
-    if [ ! -f /etc/ipwarn/ipwarn.conf ]; then
-        echo 'TEL_TOKEN=""' >> /etc/ipwarn/ipwarn.conf
-        echo 'TEL_ID=""' >> /etc/ipwarn/ipwarn.conf
-	echo 'GD_DOMAIN=""' >> /etc/ipwarn/ipwarn.conf
-        echo 'GD_NAME="@"' >> /etc/ipwarn/ipwarn.conf
-        echo 'GD_TYPE="A"' >> /etc/ipwarn/ipwarn.conf
-        echo 'GD_KEY=""' >> /etc/ipwarn/ipwarn.conf
-        echo 'GD_SECRET=""' >> /etc/ipwarn/ipwarn.conf
-	echo "edit /etc/ipwarn.conf to configure warning channels"
-    fi
-
-    IP=$(cat /etc/ipwarn/ip 2> /dev/null)
+    
+    source /etc/ipwarn.conf
     if [ "$NEWIP" != "$IP" ]; then
-        source /etc/ipwarn/ipwarn.conf
-        echo $NEWIP > /etc/ipwarn/ip
+        sed -i -e 's/IP="'"${IP}"'"/IP="'"${NEWIP}"'"/g' /etc/ipwarn.conf
         echo "New ip is $NEWIP"
     
         #Telegram
