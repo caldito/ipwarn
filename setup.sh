@@ -1,5 +1,14 @@
 #!/usr/bin/env bash
 
+check_dependencies(){
+    missing=""
+    command -v curl >/dev/null 2>&1 || missing="${missing} curl"
+    command -v echo >/dev/null 2>&1 || missing="${missing} echo"
+    command -v whoami >/dev/null 2>&1 || missing="${missing} whoami"
+    command -v sed >/dev/null 2>&1 || missing="${missing} sed"
+    [ -z "$missing" ] || { echo >&2 "Missing dependencies:${missing}. Exiting"; exit 1; }
+}
+
 write_config(){
     echo 'IP=""' >> /etc/ipwarn.conf
     echo >> /etc/ipwarn.conf
@@ -27,6 +36,7 @@ main(){
         echo "Setup should be executed as root. Exiting"
         exit 1
     fi
+    check_dependencies
     write_config
     chmod 600 /etc/ipwarn.conf
     cp ${PWD}/ipwarn /usr/local/bin/ipwarn
