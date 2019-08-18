@@ -21,17 +21,17 @@ All of these can be easily installed (if are not already by default) in all Unix
 
 First, clone the repository from GitHub
 
-```console
+```bash
 git clone https://github.com/pablogcaldito/ipwarn.git
 ```
 After that, change to the repositorie's directory
 
-```console
+```bash
 cd ipwarn
 ```
 Finally, use run the setup as administrator with bash as superuser
 
-```console
+```bash
 sudo bash setup.sh
 ```
 Now, ipwarn is installed at `/usr/local/bin/ipwarn` and can be executed from terminal just typing `ipwarn`
