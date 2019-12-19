@@ -78,7 +78,9 @@ Of course, you can use multiple flags. For checking all the options available us
 
 ## Contributing :handshake:
 
-Please read [CONTRIBUTING.md](https://gist.github.com/PurpleBooth/b24679402957c63ec426) for details on our code of conduct, and the process for submitting pull requests to us. 
+Please read [CONTRIBUTING.md](https://github.com/pablogcaldito/ipwarn/blob/master/CONTRIBUTING.md) for details on the process for submitting pull requests to us.
+
+Also read [CODE_OF_CONDUCT.md](https://github.com/pablogcaldito/ipwarn/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct.
 
 ## Authors :black_nib:
 
