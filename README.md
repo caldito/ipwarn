@@ -1,6 +1,6 @@
 # ipwarn
 
-A simple Dynamic DNS Update Client written in Bash for Unix and Unix-like operating systems. The purpose of this project is to be able to update DNS records of the main hosting providers directly and also provide other functionalities like notifiying through Telegram.
+A simple Dynamic DNS Update Client written in Shell for Unix and Unix-like operating systems. The purpose of this project is to be able to update DNS records of the main hosting providers directly and also provide other functionalities like notifiying through Telegram.
 
 For now it is able to update Godaddy's DNS records and notify using Telegram Bots.
 
@@ -8,10 +8,7 @@ For now it is able to update Godaddy's DNS records and notify using Telegram Bot
 
 In order to work ipwarn needs
 * `curl`
-* `echo`
-* `whoami`
 * `sed`
-* `bash`
 * `logger`
 * `git` (just needed for installing)
 
