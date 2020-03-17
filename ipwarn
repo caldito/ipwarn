@@ -10,8 +10,8 @@ help(){
 }
 
 telegram(){
-    result="$(curl -s -X POST "https://api.telegram.org/bot${TEL_API_TOKEN}/sendMessage" -d chat_id=${TEL_API_ID} -d text="New ip is ${new_ip}")"
-    echo "Telegram warning sent" | logger
+    result="$(curl -s -X POST "https://api.telegram.org/bot${TEL_API_TOKEN}/sendMessage" -d chat_id="${TEL_API_ID}" -d text="New ip is ${new_ip}")"
+    echo "Telegram warning sent"
 }
 
 godaddy(){
@@ -19,7 +19,7 @@ godaddy(){
 	    -H "Authorization: sso-key ${GD_API_KEY}:${GD_API_SECRET}" \
 	    -H "Content-Type: application/json" \
 	    -d "[{\"data\": \"${new_ip}\"}]"
-	echo "GoDaddy record updated" | logger
+	echo "GoDaddy record updated"
 }
 
 main(){
@@ -37,7 +37,7 @@ main(){
     if [ "${new_ip}" != "${IP}" ]; then
         sed -i -e 's/IP="'"${IP}"'"/IP="'"${new_ip}"'"/g' /etc/ipwarn.conf
         echo "New ip is ${new_ip}"
-        echo "New ip is ${new_ip}" | logger
+        echo "New ip is ${new_ip}"
         while [ $# -gt 0 ]; do
             case "$1" in
                 -t|--telegram)

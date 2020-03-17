@@ -9,8 +9,6 @@ For now it is able to update Godaddy's DNS records and notify using Telegram Bot
 In order to work ipwarn needs
 * `curl`
 * `sed`
-* `logger`
-* `git` (just needed for installing)
 
 All of these can be easily installed (if are not already by default) in all Unix and Unix-like operating systems.
 
@@ -53,7 +51,7 @@ The fileds that are already filled in the cofiguration file can be left by defau
 ## Deployment :package:
 This software needs run as root and works at it best along othe software such as `cronjobs` in order to check if the IP has changed every certain time.
 
-The flags you pass to the program are important because they determine the service(s) it will use. If you don't put any flag the ipwarn will only log the change of IP.
+The flags you pass to the program are important because they determine the service(s) it will use. If you don't put any flag the ipwarn will only print the change of IP.
 
 ---
 For example, if you want that send you a telegram message when it happens you will have use the telegram flag:
