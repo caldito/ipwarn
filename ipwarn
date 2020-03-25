@@ -27,10 +27,7 @@ main(){
         help
         exit 0
     fi
-    if [ "$(whoami)" != "root" ]; then
-        echo "This program should be executed as root. Exiting"
-        exit 1
-    fi
+    
     new_ip="$(curl -s icanhazip.com)"
     
     source /etc/ipwarn.conf

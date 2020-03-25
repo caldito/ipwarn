@@ -33,10 +33,6 @@ write_config(){
 }
 
 main(){
-    if [ "$(whoami)" != "root" ]; then
-        echo "Setup should be executed as root. Exiting"
-        exit 1
-    fi
     check_dependencies
     write_config
     chmod 600 /etc/ipwarn.conf
