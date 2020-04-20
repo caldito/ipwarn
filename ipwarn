@@ -5,8 +5,8 @@ help(){
     echo "usage:  ipwarn <flag 1> ... <flag n>"
     echo "flags:"
     echo "    ipwarn {-h --help}            displays this"
-    echo "    ipwarn {-t --telegram}        updates GoDaddy DNS record if the IP has changed"
-    echo "    ipwarn {-g --godaddy}         send message via Telegram if the IP has changed"
+    echo "    ipwarn {-t --telegram}        send message via Telegram if the IP has changed"
+    echo "    ipwarn {-g --godaddy}         updates GoDaddy DNS record if the IP has changed"
 }
 
 telegram(){
@@ -15,42 +15,60 @@ telegram(){
 }
 
 godaddy(){
-    curl -s -X PUT "https://api.godaddy.com/v1/domains/${GD_DOMAIN}/records/${GD_RECORD_TYPE}/${GD_RECORD_NAME}" \
-	    -H "Authorization: sso-key ${GD_API_KEY}:${GD_API_SECRET}" \
-	    -H "Content-Type: application/json" \
-	    -d "[{\"data\": \"${new_ip}\"}]"
-	echo "GoDaddy record updated"
+    result="$(curl -s -X PUT "https://api.godaddy.com/v1/domains/${GD_DOMAIN}/records/${GD_RECORD_TYPE}/${GD_RECORD_NAME}" -H "Authorization: sso-key ${GD_API_KEY}:${GD_API_SECRET}" -H "Content-Type: application/json" -d "[{\"data\": \"${new_ip}\"}]"
+	echo "GoDaddy record updated")"
 }
 
 main(){
+    # Check if help is wanted
     if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
         help
         exit 0
     fi
-    
-    new_ip="$(curl -s icanhazip.com)"
-    
-    source /etc/ipwarn.conf
-    if [ "${new_ip}" != "${IP}" ]; then
-        sed -i -e 's/IP="'"${IP}"'"/IP="'"${new_ip}"'"/g' /etc/ipwarn.conf
-        echo "New ip is ${new_ip}"
-        echo "New ip is ${new_ip}"
-        while [ $# -gt 0 ]; do
-            case "$1" in
-                -t|--telegram)
-                    telegram
-                    shift
-                    ;;
-                -g|--godaddy)
-                    godaddy
-                    shift
-                    ;;
-                *)
-                    break
-                    ;;
-            esac
-        done
+
+    # Check if the user wants the version
+    if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--help" ]; then
+        echo ipwarn 1.0.0
+        exit 0
     fi
+
+    # Retrieve flags
+    telegram_flag=0
+    godaddy_flag=0
+    time=30
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -t|--telegram)
+                 telegramFlag=1
+                 shift
+                 ;;
+            -g|--godaddy)
+                 godaddyFlag=1
+                 shift
+                 ;;
+            *)
+                 break
+                 ;;
+        esac
+    done
+    
+    # Infinite loop that checks if the ip has changed
+    while true
+    do
+        new_ip="$(curl -s icanhazip.com)"
+        source /etc/ipwarn.conf
+        if [ "${new_ip}" != "${IP}" ]; then
+            sed -i -e 's/IP="'"${IP}"'"/IP="'"${new_ip}"'"/g' /etc/ipwarn.conf
+            echo "New ip is ${new_ip}"
+            if [ "${telegram_flag}" -eq "1" ]; then
+                telegram
+            fi
+            if [ "${godaddy_flag}" -eq "1" ]; then
+                godaddy
+            fi
+        fi
+        sleep "${time}"
+    done
 }
 
 main "$@"
