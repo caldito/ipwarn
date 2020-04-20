@@ -49,7 +49,6 @@ So, for instance, if you want ipwarn to be able to update GoDaddy DNS records an
 The fileds that are already filled in the cofiguration file can be left by default.
 
 ## Deployment :package:
-This software needs run as root and works at it best along othe software such as `cronjobs` in order to check if the IP has changed every certain time.
 
 The flags you pass to the program are important because they determine the service(s) it will use. If you don't put any flag the ipwarn will only print the change of IP.
 
