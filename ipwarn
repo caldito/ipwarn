@@ -1,10 +1,16 @@
 #!/bin/sh
 
 
+print_version(){
+    echo "ipwarn 2.0.0"
+}
+
 help(){
+    echo "$(print_version)"
     echo "usage:  ipwarn <flag 1> ... <flag n>"
     echo "flags:"
-    echo "    ipwarn {-h --help}            displays this"
+    echo "    ipwarn {-h --help}            display the help (this) and exit"
+    echo "    ipwarn {-v -V --version}      display the version and exit"
     echo "    ipwarn {-t --telegram}        send message via Telegram if the IP has changed"
     echo "    ipwarn {-g --godaddy}         updates GoDaddy DNS record if the IP has changed"
 }
@@ -27,8 +33,8 @@ main(){
     fi
 
     # Check if the user wants the version
-    if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--help" ]; then
-        echo ipwarn 1.0.0
+    if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--version" ] || [ "$1" = "--help" ]; then
+        print_version
         exit 0
     fi
 
