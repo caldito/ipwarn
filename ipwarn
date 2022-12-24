@@ -26,6 +26,7 @@ godaddy(){
 
 get_config(){
     config_file="/etc/ipwarn/ipwarn.conf"
+
     while [ $# -gt 0 ]; do
         case "$1" in
             -c|--config)
@@ -38,7 +39,7 @@ get_config(){
                 ;;
         esac
     done
-    echo $config_file
+
     if [ -e "${config_file}" ]; then
         if ! source "${config_file}"; then
             echo "error reading or opening config file ${config_file}"
@@ -66,8 +67,7 @@ main(){
     get_config "$@"
 
     # Infinite loop that checks if the ip has changed
-    while true
-    do
+    while true; do
         new_ip="$(curl -s icanhazip.com)"
         if [ "${new_ip}" != "${ip}" ]; then
             ip="${new_ip}"
