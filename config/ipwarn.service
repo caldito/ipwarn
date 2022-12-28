@@ -1,0 +1,10 @@
+[Unit]
+Description=ipwarn dynamic dns update client
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/ipwarn --config /etc/ipwarn/ipwarn.conf
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

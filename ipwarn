@@ -1,80 +1,86 @@
 #!/usr/bin/env bash
 
-# MIT License
-# 
-# Copyright (c) 2019 Pablo Gómez-Caldito Gómez
-# 
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-# 
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-# 
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
 
-help(){
+print_version(){
+    echo "ipwarn 2.0.0"
+}
+
+print_help(){
+    echo "$(print_version)"
     echo "usage:  ipwarn <flag 1> ... <flag n>"
     echo "flags:"
-    echo "    ipwarn {-h --help}            displays this"
-    echo "    ipwarn {-t --telegram}        updates GoDaddy DNS record if the IP has changed"
-    echo "    ipwarn {-g --godaddy}         send message via Telegram if the IP has changed"
+    echo "    ipwarn {-h --help}                    display the help (this) and exit"
+    echo "    ipwarn {-v -V --version}              display the version and exit"
+    echo "    ipwarn {-c --config } config-file     choose a custom location for the config file"
 }
 
 telegram(){
-    result="$(curl -s -X POST "https://api.telegram.org/bot${TEL_API_TOKEN}/sendMessage" -d chat_id=${TEL_API_ID} -d text="New ip is ${new_ip}")"
-    echo "Telegram warning sent" | logger
+    result="$(curl -s -X POST "https://api.telegram.org/bot${TEL_API_TOKEN}/sendMessage" -d chat_id="${TEL_API_ID}" -d text="New ip is ${new_ip}")"
+    echo "Telegram warning sent"
 }
 
 godaddy(){
-    curl -s -X PUT "https://api.godaddy.com/v1/domains/${GD_DOMAIN}/records/${GD_RECORD_TYPE}/${GD_RECORD_NAME}" \
-	    -H "Authorization: sso-key ${GD_API_KEY}:${GD_API_SECRET}" \
-	    -H "Content-Type: application/json" \
-	    -d "[{\"data\": \"${new_ip}\"}]"
-	echo "GoDaddy record updated" | logger
+    result="$(curl -s -X PUT "https://api.godaddy.com/v1/domains/${GD_DOMAIN}/records/${GD_RECORD_TYPE}/${GD_RECORD_NAME}" -H "Authorization: sso-key ${GD_API_KEY}:${GD_API_SECRET}" -H "Content-Type: application/json" -d "[{\"data\": \"${new_ip}\"}]")"
+	echo "GoDaddy record updated"
+}
+
+get_config(){
+    config_file="/etc/ipwarn/ipwarn.conf"
+
+    while [ $# -gt 0 ]; do
+        case "$1" in
+            -c|--config)
+                shift
+                config_file=$1
+                shift
+                ;;
+            *)
+                break
+                ;;
+        esac
+    done
+
+    if [ -e "${config_file}" ]; then
+        if ! source "${config_file}"; then
+            echo "error reading or opening config file ${config_file}"
+            exit 1
+        fi
+    else
+        echo "error reading or opening config file ${config_file}"
+        exit 1
+    fi
 }
 
 main(){
+    # Check if help is wanted
     if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-        help
+        print_help
         exit 0
     fi
-    if [ "$(whoami)" != "root" ]; then
-        echo "This program should be executed as root. Exiting"
-        exit 1
+
+    # Check if the user wants the version
+    if [ "$1" = "-v" ] || [ "$1" = "-V" ] || [ "$1" = "--version" ]; then
+        print_version
+        exit 0
     fi
-    new_ip="$(curl -s icanhazip.com)"
-    
-    source /etc/ipwarn.conf
-    if [ "${new_ip}" != "${IP}" ]; then
-        sed -i -e 's/IP="'"${IP}"'"/IP="'"${new_ip}"'"/g' /etc/ipwarn.conf
-        echo "New ip is ${new_ip}"
-        echo "New ip is ${new_ip}" | logger
-        while [ $# -gt 0 ]; do
-            case "$1" in
-                -t|--telegram)
-                    telegram
-                    shift
-                    ;;
-                -g|--godaddy)
-                    godaddy
-                    shift
-                    ;;
-                *)
-                    break
-                    ;;
-            esac
-        done
-    fi
+
+    get_config "$@"
+
+    # Infinite loop that checks if the ip has changed
+    while true; do
+        new_ip="$(curl -s icanhazip.com)"
+        if [ "${new_ip}" != "${ip}" ]; then
+            ip="${new_ip}"
+            echo "New ip is ${new_ip}"
+            if [ "$UPDATE_TELEGRAM" = true ]; then
+                telegram
+            fi
+            if [ "$UPDATE_GODADDY" = true ]; then
+                godaddy
+            fi
+        fi
+        sleep "${INTERVAL}"
+    done
 }
 
 main "$@"
