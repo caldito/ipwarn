@@ -19,7 +19,7 @@ With the flag `-c` or `--config` you can override the default location of this f
 
 ### Docker
 ```
-docker run pablogcaldito/ipwarn:v1.0.0 -v your-config-file:/etc/ipwarn/ipwarn.conf
+docker run --mount type=bind,source=your-custom-ipwarn.conf,target=/etc/ipwarn/ipwarn.conf pablogcaldito/ipwarn:v1.0.1
 ```
 ### Systemd install
 Run the install script

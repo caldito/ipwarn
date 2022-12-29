@@ -29,12 +29,12 @@ jobs:
       - deploy:
           name: "Upload amd64 image to registry"
           command: |
-            export VERSION="${CIRCLE_TAG}"
+            export VERSION="${CIRCLE_TAG}-amd64"
             make build-docker
             echo "${DOCKERHUB_PASSWORD}" | docker login -u pablogcaldito --password-stdin
             docker push pablogcaldito/ipwarn:"${VERSION}"
-            docker tag pablogcaldito/ipwarn:"${VERSION}" pablogcaldito/ipwarn:latest
-            docker push pablogcaldito/ipwarn:latest
+            docker tag pablogcaldito/ipwarn:"${VERSION}" pablogcaldito/ipwarn:latest-amd64
+            docker push pablogcaldito/ipwarn:latest-amd64
   push-arm64:
     machine:
       image: ubuntu-2004:202201-02
@@ -49,6 +49,8 @@ jobs:
             echo "${DOCKERHUB_PASSWORD}" | docker login -u pablogcaldito --password-stdin
             docker push pablogcaldito/ipwarn:"${VERSION}"
             docker tag pablogcaldito/ipwarn:"${VERSION}" pablogcaldito/ipwarn:latest-arm64
+            docker push pablogcaldito/ipwarn:latest-arm64
+
 workflows:
   test:
     jobs:
