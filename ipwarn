@@ -2,7 +2,7 @@
 
 
 print_version(){
-    echo "ipwarn 2.0.0"
+    echo "ipwarn v1.0.1"
 }
 
 print_help(){
