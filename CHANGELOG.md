@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Unreleased
 
+## [v1.0.1](https://github.com/caldito/ipwarn/tree/v1.0.1) - 2022-12-29
+[Full changelog](https://github.com/caldito/ipwarn/compare/v1.0.0...v1.0.1)
+### Fixed
+- Docker instructions in README.md
+- Fix pipelines for releasing multi-arch docker images
+
 ## [v1.0.0](https://github.com/caldito/ipwarn/tree/v1.0.0) - 2022-12-28
 [Full changelog](https://github.com/caldito/ipwarn/compare/v0.1.0...v1.0.0)
 ### Added
