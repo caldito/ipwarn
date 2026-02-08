@@ -1,58 +1,161 @@
 # ipwarn
 
-A simple Dynamic DNS Update Client written in Bash.
+A simple Dynamic DNS Update Client that automatically updates your DNS records when your IP changes.
 
-The purpose of this project is to be able to update DNS records of the main hosting providers directly and also provide other functionalities like notifiying through Telegram.
+## Features
 
-For now it is able to update Godaddy's DNS records and notify using Telegram Bots.
+- **Multiple DNS Providers**: Update records on GoDaddy and Porkbun
+- **Automatic IP Detection**: Checks your public IP with automatic failover between multiple services
+- **Telegram Notifications**: Get notified instantly when your IP changes
+- **Easy Configuration**: Simple config file with sensible defaults
+- **Production Ready**: Docker and systemd support for 24/7 operation
+- **Test Once**: Run in dry-run mode to verify your setup before going live
 
-## Prerequisites :clipboard:
+## Quick Start
 
-In order to work ipwarn needs `curl`.
+### Docker (Recommended)
 
-## Configuration :gear:
-This software needs to use the APIs of different services. Due to this in the config file `/etc/ipwarn/ipwarn.conf` you can choose the services to enable and store the tokens for those. The configs inside this file are quite self descriptive, so I won't go into details here.
+```bash
+# Build the image
+docker build -t ipwarn:2.0.0 .
 
-With the flag `-c` or `--config` you can override the default location of this file.
-
-## Running :running:
-
-### Docker
-```
-docker run --mount type=bind,source=your-custom-ipwarn.conf,target=/etc/ipwarn/ipwarn.conf pablogcaldito/ipwarn:v1.0.1
-```
-### Systemd install
-Run the install script
-```
-curl -O https://raw.githubusercontent.com/caldito/ipwarn/master/config/ipwarn-systemd-easy-install.sh && sudo bash ./ipwarn-systemd-easy-install.sh
-```
-Override the config found in `/etc/ipwarn/ipwarn.conf`
-
-Restart the service
-```
-sudo systemd restart ipwarn.service
+# Run with your config file
+docker run -d \
+  --name ipwarn \
+  --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
+  pablogcaldito/ipwarn:2.0.0
 ```
 
-### Standalone run
+### Systemd Service
 
-After clonning the repo go into its directory and run:
-./ipwarn --config your-config-file
+```bash
+curl -O https://raw.githubusercontent.com/caldito/ipwarn/master/config/ipwarn-systemd-easy-install.sh
+sudo bash ./ipwarn-systemd-easy-install.sh
+```
 
+After installation, configure `/etc/ipwarn/ipwarn.conf` and restart:
+```bash
+sudo systemctl restart ipwarn.service
+```
 
-## Built with :hammer_and_wrench:
+## Configuration
 
-* [Telegram Bot API](https://core.telegram.org/bots/apis) - Used to notify when IP changes
-* [GoDaddy API](https://developer.godaddy.com/) - Used to update DNS records in GoDaddy
+Create or edit `/etc/ipwarn/ipwarn.conf` with your settings:
 
-## Contributing :handshake:
+```bash
+# Check interval in seconds (default: 30)
+INTERVAL=30
 
-Please read [CONTRIBUTING.md](https://github.com/caldito/ipwarn/blob/master/CONTRIBUTING.md) for details on the process for submitting pull requests to the project.
+# IP checking services (comma-separated, in order)
+IP_CHECKERS=icanhazip.com,ipify.org,ifconfig.me
 
-Also read [CODE_OF_CONDUCT.md](https://github.com/caldito/ipwarn/blob/master/CODE_OF_CONDUCT.md) for details on the code of conduct.
+# Telegram Notifications
+UPDATE_TELEGRAM=false
+TEL_API_TOKEN=your_bot_token
+TEL_CHAT_ID=your_chat_id
 
-## Authors :black_nib:
+# GoDaddy DNS
+UPDATE_GODADDY=false
+GD_DOMAIN=example.com
+GD_RECORD_NAME="@"              # Use "@" for root domain or "www" for subdomain
+GD_RECORD_TYPE="A"
+GD_API_KEY=your_api_key
+GD_API_SECRET=your_api_secret
 
-See the [contributors](https://github.com/caldito/ipwarn/graphs/contributors) page.
+# Porkbun DNS
+UPDATE_PORKBUN=false
+PB_DOMAIN=example.com
+PB_RECORD_NAME="@"              # Use "@" for root domain or "www" for subdomain
+PB_RECORD_TYPE="A"
+PB_API_KEY=your_api_key
+PB_SECRET_API_KEY=your_secret_api_key
+PB_TTL=600                        # Time to live in seconds
 
-## License :balance_scale:
-This project is licensed under the MIT License - see the [LICENSE](https://github.com/caldito/ipwarn/blob/master/LICENSE) file for details
+# Logging level (DEBUG, INFO, WARNING, ERROR)
+LOG_LEVEL=INFO
+```
+
+**Tip**: Test your configuration first with `--dry-run` flag:
+```bash
+docker run --rm \
+  --mount type=bind,source=ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
+  pablogcaldito/ipwarn:2.0.0 --dry-run --once
+```
+
+## CLI Options
+
+```bash
+ipwarn [-h] [--version] [-c CONFIG] [--once] [--dry-run]
+
+Options:
+  -h, --help            Show help message
+  -v, --version         Show version
+  -c, --config CONFIG   Path to config file (default: /etc/ipwarn/ipwarn.conf)
+  --once                Run once and exit (for testing)
+  --dry-run             Don't actually update DNS records (for testing)
+```
+
+## Getting API Keys
+
+### GoDaddy
+1. Go to [developer.godaddy.com](https://developer.godaddy.com/)
+2. Sign in and go to Keys & Credentials
+3. Create a new API key
+4. Select Production and copy your Key and Secret
+
+### Porkbun
+1. Log in to [porkbun.com](https://porkbun.com/)
+2. Go to Account → API Access
+3. Create a new API key
+4. Copy your API Key and Secret API Key
+
+### Telegram Bot
+1. Open Telegram and start a chat with [@BotFather](https://t.me/BotFather)
+2. Send `/newbot` and follow the instructions
+3. Copy your bot token
+4. To get your chat ID, send a message to your bot and visit: `https://api.telegram.org/bot<TOKEN>/getUpdates`
+
+## Development
+
+### Prerequisites
+- Python 3.12+
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
+
+### Setup Development Environment
+
+```bash
+# Clone the repository
+git clone https://github.com/caldito/ipwarn.git
+cd ipwarn
+
+# Setup development environment with uv
+make setup
+
+# Run tests
+make test
+
+# Format code
+make format
+
+# Run linters
+make lint
+
+# Run locally for testing
+make run-once
+```
+
+### Development Commands
+
+```bash
+make setup          # Setup venv with uv
+make test           # Run tests
+make lint           # Run linters (ruff, mypy)
+make format         # Format code (black, ruff)
+make run            # Run continuously
+make run-once       # Run once for testing
+make clean          # Clean build artifacts
+```
+
+## License
+
+MIT License - see the [LICENSE](https://github.com/caldito/ipwarn/blob/master/LICENSE) file for details

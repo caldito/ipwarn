@@ -7,9 +7,20 @@ jobs:
     steps:
       - checkout
       - deploy:
-          name: "Test in amd64 machine"
+          name: "Install Python and dependencies"
           command: |
+            sudo apt-get update && sudo apt-get install -y python3 python3-pip python3-venv
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -e ".[dev]"
+      - deploy:
+          name: "Run tests in amd64 machine"
+          command: |
+            . venv/bin/activate
             make test
+            make lint
+
   test-arm64:
     machine:
       image: ubuntu-2004:202201-02
@@ -17,9 +28,20 @@ jobs:
     steps:
       - checkout
       - deploy:
-          name: "Test in arm64 machine"
+          name: "Install Python and dependencies"
           command: |
+            sudo apt-get update && sudo apt-get install -y python3 python3-pip python3-venv
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -e ".[dev]"
+      - deploy:
+          name: "Run tests in arm64 machine"
+          command: |
+            . venv/bin/activate
             make test
+            make lint
+
   push-amd64:
     machine:
       image: ubuntu-2004:202201-02
@@ -30,11 +52,12 @@ jobs:
           name: "Upload amd64 image to registry"
           command: |
             export VERSION="${CIRCLE_TAG}-amd64"
-            make build-docker
+            docker build -t pablogcaldito/ipwarn:"${VERSION}" .
             echo "${DOCKERHUB_PASSWORD}" | docker login -u pablogcaldito --password-stdin
             docker push pablogcaldito/ipwarn:"${VERSION}"
             docker tag pablogcaldito/ipwarn:"${VERSION}" pablogcaldito/ipwarn:latest-amd64
             docker push pablogcaldito/ipwarn:latest-amd64
+
   push-arm64:
     machine:
       image: ubuntu-2004:202201-02
@@ -45,7 +68,7 @@ jobs:
           name: "Upload arm64 image to registry"
           command: |
             export VERSION="${CIRCLE_TAG}-arm64"
-            make build-docker
+            docker build -t pablogcaldito/ipwarn:"${VERSION}" .
             echo "${DOCKERHUB_PASSWORD}" | docker login -u pablogcaldito --password-stdin
             docker push pablogcaldito/ipwarn:"${VERSION}"
             docker tag pablogcaldito/ipwarn:"${VERSION}" pablogcaldito/ipwarn:latest-arm64

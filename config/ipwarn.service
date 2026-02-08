@@ -1,10 +1,14 @@
 [Unit]
-Description=ipwarn dynamic dns update client
+Description=ipwarn dynamic dns update client (Python)
 After=network.target
 
 [Service]
+Type=simple
 ExecStart=/usr/local/bin/ipwarn --config /etc/ipwarn/ipwarn.conf
 Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
 
 [Install]
 WantedBy=multi-user.target

@@ -5,6 +5,18 @@ email, or any other method with the owners of this repository before making a ch
 
 Please note we have a code of conduct, please follow it in all your interactions with the project.
 
+## Development Setup
+
+For detailed development setup information, see [DEVELOPMENT.md](https://github.com/pablogcaldito/ipwarn/blob/master/DEVELOPMENT.md).
+
+Quick start:
+```bash
+make setup    # Setup development environment
+make test     # Run tests
+make format   # Format code
+make lint     # Run linters
+```
+
 ## Pull Request Process
 
 - Pull requests are submitted to the `develop` branch
