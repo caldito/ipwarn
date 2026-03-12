@@ -4,10 +4,8 @@ This module provides backward-compatible parsing of shell-like configuration fil
 as used by the original Bash version of ipwarn.
 """
 
-import os
 import re
 from pathlib import Path
-from typing import Any, Dict
 
 
 class ConfigError(Exception):
@@ -24,7 +22,7 @@ class Config:
             config_path: Path to the configuration file.
         """
         self.config_path = Path(config_path)
-        self._values: Dict[str, str] = {}
+        self._values: dict[str, str] = {}
         self._parse()
 
     def _parse(self) -> None:
@@ -33,7 +31,7 @@ class Config:
             raise ConfigError(f"Config file not found: {self.config_path}")
 
         with open(self.config_path, encoding="utf-8") as f:
-            for line_num, line in enumerate(f, 1):
+            for _line_num, line in enumerate(f, 1):
                 line = line.strip()
 
                 # Skip empty lines and comments

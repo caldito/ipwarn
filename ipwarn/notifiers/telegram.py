@@ -1,7 +1,6 @@
 """Telegram notifier implementation."""
 
 import logging
-from typing import Any, Dict
 
 import requests
 
@@ -71,4 +70,4 @@ class TelegramNotifier(BaseNotifier):
             return True
 
         except requests.exceptions.RequestException as e:
-            raise NotifierError(f"Failed to send Telegram notification: {e}")
+            raise NotifierError(f"Failed to send Telegram notification: {e}") from e

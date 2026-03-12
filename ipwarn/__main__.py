@@ -2,19 +2,17 @@
 
 import argparse
 import logging
-import signal
 import sys
 import time
-from typing import Optional
 
 from ipwarn import __version__
 from ipwarn.config import Config, ConfigError
-from ipwarn.dns_providers.base import DNSProviderError
+from ipwarn.dns_providers.base import BaseDNSProvider, DNSProviderError
 from ipwarn.dns_providers.godaddy import GoDaddyProvider
 from ipwarn.dns_providers.porkbun import PorkbunProvider
 from ipwarn.ip_checkers import IPChecker, IPCheckerError
 from ipwarn.logger import setup_logging
-from ipwarn.notifiers.base import NotifierError
+from ipwarn.notifiers.base import BaseNotifier, NotifierError
 from ipwarn.notifiers.telegram import TelegramNotifier
 
 logger = logging.getLogger(__name__)
@@ -37,8 +35,9 @@ class IPWarn:
         self.config = config
         self.dry_run = dry_run
         self.ip_checker = IPChecker(checkers=config.ip_checkers)
-        self.providers = []
-        self.notifiers = []
+        self.providers: list[tuple[str, BaseDNSProvider]] = []
+        self.notifiers: list[tuple[str, BaseNotifier]] = []
+        self._last_ip: str | None = None
 
         self._setup_providers()
         self._setup_notifiers()
@@ -46,20 +45,20 @@ class IPWarn:
     def _setup_providers(self) -> None:
         """Set up DNS providers based on configuration."""
         if self.config.update_godaddy:
-            provider = GoDaddyProvider(
+            godaddy_provider = GoDaddyProvider(
                 api_key=self.config.godaddy_api_key,
                 api_secret=self.config.godaddy_api_secret,
             )
-            self.providers.append(("GoDaddy", provider))
+            self.providers.append(("GoDaddy", godaddy_provider))
             logger.info("GoDaddy provider enabled")
 
         if self.config.update_porkbun:
-            provider = PorkbunProvider(
+            porkbun_provider = PorkbunProvider(
                 api_key=self.config.porkbun_api_key,
                 secret_api_key=self.config.porkbun_secret_api_key,
                 ttl=self.config.porkbun_ttl,
             )
-            self.providers.append(("Porkbun", provider))
+            self.providers.append(("Porkbun", porkbun_provider))
             logger.info("Porkbun provider enabled")
 
         if not self.providers:
@@ -97,9 +96,7 @@ class IPWarn:
         for name, provider in self.providers:
             try:
                 domain = (
-                    self.config.godaddy_domain
-                    if name == "GoDaddy"
-                    else self.config.porkbun_domain
+                    self.config.godaddy_domain if name == "GoDaddy" else self.config.porkbun_domain
                 )
                 record_name = (
                     self.config.godaddy_record_name
@@ -119,16 +116,14 @@ class IPWarn:
                         )
                     else:
                         provider.update_ip(domain, record_name, record_type, new_ip)
-                        logger.info(
-                            f"Updated {name} record: {record_name}.{domain} -> {new_ip}"
-                        )
+                        logger.info(f"Updated {name} record: {record_name}.{domain} -> {new_ip}")
                 else:
                     logger.info(f"{name} record already correct: {new_ip}")
 
             except DNSProviderError as e:
                 logger.error(f"Failed to update {name} DNS record: {e}")
 
-    def check_and_update(self) -> Optional[str]:
+    def check_and_update(self) -> str | None:
         """Check IP and update DNS if changed.
 
         Returns:

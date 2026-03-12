@@ -2,7 +2,7 @@
 
 import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +14,7 @@ class NotifierError(Exception):
 class BaseNotifier(ABC):
     """Abstract base class for notifiers."""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: dict[str, Any]):
         """Initialize notifier.
 
         Args:

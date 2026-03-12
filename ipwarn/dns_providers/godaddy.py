@@ -1,7 +1,6 @@
 """GoDaddy DNS provider implementation."""
 
 import logging
-from typing import Any, Dict
 
 import requests
 
@@ -39,7 +38,7 @@ class GoDaddyProvider(BaseDNSProvider):
         if not self.config.get("api_secret"):
             raise DNSProviderError("GoDaddy API secret is required")
 
-    def _get_headers(self) -> Dict[str, str]:
+    def _get_headers(self) -> dict[str, str]:
         """Get request headers with authentication.
 
         Returns:
@@ -70,15 +69,15 @@ class GoDaddyProvider(BaseDNSProvider):
             response = requests.get(url, headers=self._get_headers(), timeout=10)
             response.raise_for_status()
 
-            records = response.json()
+            records: list[dict[str, str | int]] = response.json()
 
             if not records:
                 raise DNSProviderError(f"No {record_type} record found for {record_name}.{domain}")
 
-            return records[0]["data"]
+            return str(records[0]["data"])
 
         except requests.exceptions.RequestException as e:
-            raise DNSProviderError(f"Failed to get current IP from GoDaddy: {e}")
+            raise DNSProviderError(f"Failed to get current IP from GoDaddy: {e}") from e
 
     def update_ip(self, domain: str, record_name: str, record_type: str, ip: str) -> bool:
         """Update IP address for a DNS record.
@@ -107,4 +106,4 @@ class GoDaddyProvider(BaseDNSProvider):
             return True
 
         except requests.exceptions.RequestException as e:
-            raise DNSProviderError(f"Failed to update IP on GoDaddy: {e}")
+            raise DNSProviderError(f"Failed to update IP on GoDaddy: {e}") from e

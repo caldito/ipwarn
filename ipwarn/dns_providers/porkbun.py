@@ -1,7 +1,6 @@
 """Porkbun DNS provider implementation."""
 
 import logging
-from typing import Any, Dict
 
 import requests
 
@@ -41,7 +40,7 @@ class PorkbunProvider(BaseDNSProvider):
         if not self.config.get("secret_api_key"):
             raise DNSProviderError("Porkbun secret API key is required")
 
-    def _get_auth_payload(self) -> Dict[str, str]:
+    def _get_auth_payload(self) -> dict[str, str]:
         """Get authentication payload for requests.
 
         Returns:
@@ -80,16 +79,19 @@ class PorkbunProvider(BaseDNSProvider):
             if result.get("status") != "SUCCESS":
                 raise DNSProviderError(f"Porkbun API error: {result}")
 
-            records = result.get("records", [])
+            records: list[dict[str, str | int]] = result.get("records", [])
 
             if not records:
                 raise DNSProviderError(f"No {record_type} record found for {record_name}.{domain}")
 
-            # Return the IP from the first record
-            return records[0]["content"]
+            # Return IP from the first record
+            content = records[0].get("content", "")
+            if not content:
+                raise DNSProviderError(f"No content in record for {record_name}.{domain}")
+            return str(content)
 
         except requests.exceptions.RequestException as e:
-            raise DNSProviderError(f"Failed to get current IP from Porkbun: {e}")
+            raise DNSProviderError(f"Failed to get current IP from Porkbun: {e}") from e
 
     def update_ip(self, domain: str, record_name: str, record_type: str, ip: str) -> bool:
         """Update IP address for a DNS record.
@@ -128,4 +130,4 @@ class PorkbunProvider(BaseDNSProvider):
             return True
 
         except requests.exceptions.RequestException as e:
-            raise DNSProviderError(f"Failed to update IP on Porkbun: {e}")
+            raise DNSProviderError(f"Failed to update IP on Porkbun: {e}") from e

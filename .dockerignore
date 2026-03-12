@@ -6,6 +6,7 @@ __pycache__/
 .Python
 
 # Virtual environments
+.venv/
 venv/
 env/
 ENV/
@@ -34,19 +35,13 @@ Thumbs.db
 .git/
 .gitignore
 
-# CI/CD
-.circleci/
-.github/
-
 # Documentation
 CHANGELOG.md
 CODE_OF_CONDUCT.md
 CONTRIBUTING.md
+DEVELOPMENT.md
 LICENSE
 README.md
-
-# Config examples
-config/ipwarn.conf.example
 
 # Old bash script
 *.sh.bak
@@ -55,3 +50,10 @@ config/ipwarn.conf.example
 build/
 dist/
 *.egg-info/
+
+# uv
+uv.lock
+
+# Linter caches
+.ruff_cache/
+.mypy_cache/

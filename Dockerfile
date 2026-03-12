@@ -2,22 +2,23 @@ FROM python:3.12-slim
 
 LABEL maintainer="pablo@caldito.me"
 
-# Install runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
+# Install uv for dependency management
+RUN pip install --no-cache-dir uv
 
 # Create application directory
 WORKDIR /app
 
 # Copy application files
-COPY ipwarn/ /app/ipwarn/
 COPY pyproject.toml /app/
-COPY requirements.txt /app/
+COPY ipwarn/ /app/ipwarn/
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt && \
-    pip install --no-cache-dir .
+# Install dependencies and package using uv
+RUN uv venv /opt/venv && \
+    . /opt/venv/bin/activate && \
+    uv pip install /app
+
+# Add venv to PATH
+ENV PATH="/opt/venv/bin:$PATH"
 
 # Create config directory
 RUN mkdir -p /etc/ipwarn
@@ -26,4 +27,4 @@ RUN mkdir -p /etc/ipwarn
 COPY config/ipwarn.conf.example /etc/ipwarn/ipwarn.conf
 
 # Set entrypoint
-CMD ["python", "-m", "ipwarn", "--config", "/etc/ipwarn/ipwarn.conf"]
+CMD ["ipwarn", "--config", "/etc/ipwarn/ipwarn.conf"]

@@ -2,7 +2,6 @@
 
 import logging
 import re
-from typing import Optional
 
 import requests
 
@@ -22,7 +21,7 @@ class IPChecker:
         "ifconfig.me": "https://ifconfig.me/ip",
     }
 
-    def __init__(self, checkers: Optional[list[str]] = None, timeout: int = 5):
+    def __init__(self, checkers: list[str] | None = None, timeout: int = 5):
         """Initialize IP checker.
 
         Args:
@@ -85,9 +84,9 @@ class IPChecker:
             return ip
 
         except requests.exceptions.Timeout:
-            raise IPCheckerError(f"Timeout checking IP from {url}")
+            raise IPCheckerError(f"Timeout checking IP from {url}") from None
         except requests.exceptions.RequestException as e:
-            raise IPCheckerError(f"Request failed: {e}")
+            raise IPCheckerError(f"Request failed: {e}") from e
 
     @staticmethod
     def _is_valid_ip(ip: str) -> bool:

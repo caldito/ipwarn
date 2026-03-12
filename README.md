@@ -1,19 +1,19 @@
 # ipwarn
 
-A simple Dynamic DNS Update Client that automatically updates your DNS records when your IP changes.
+ipwarn is a simple Dynamic DNS Update Client.
 
 ## Features
 
-- **Multiple DNS Providers**: Update records on GoDaddy and Porkbun
+- **Multiple DNS Providers**: Update records on **Porkbun** and **GoDaddy**
 - **Automatic IP Detection**: Checks your public IP with automatic failover between multiple services
 - **Telegram Notifications**: Get notified instantly when your IP changes
 - **Easy Configuration**: Simple config file with sensible defaults
-- **Production Ready**: Docker and systemd support for 24/7 operation
+- **Production Ready**: Docker images ready for easy deployment
 - **Test Once**: Run in dry-run mode to verify your setup before going live
 
 ## Quick Start
 
-### Docker (Recommended)
+### Docker
 
 ```bash
 # Build the image
@@ -23,19 +23,16 @@ docker build -t ipwarn:2.0.0 .
 docker run -d \
   --name ipwarn \
   --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  pablogcaldito/ipwarn:2.0.0
+  ipwarn:2.0.0
 ```
 
-### Systemd Service
-
+Or pull from GitHub Container Registry:
 ```bash
-curl -O https://raw.githubusercontent.com/caldito/ipwarn/master/config/ipwarn-systemd-easy-install.sh
-sudo bash ./ipwarn-systemd-easy-install.sh
-```
-
-After installation, configure `/etc/ipwarn/ipwarn.conf` and restart:
-```bash
-sudo systemctl restart ipwarn.service
+docker pull ghcr.io/caldito/ipwarn:2.0.0
+docker run -d \
+  --name ipwarn \
+  --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
+  ghcr.io/caldito/ipwarn:2.0.0
 ```
 
 ## Configuration
@@ -79,7 +76,7 @@ LOG_LEVEL=INFO
 ```bash
 docker run --rm \
   --mount type=bind,source=ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  pablogcaldito/ipwarn:2.0.0 --dry-run --once
+  ghcr.io/caldito/ipwarn:2.0.0 --dry-run --once
 ```
 
 ## CLI Options

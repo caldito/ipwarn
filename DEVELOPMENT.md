@@ -168,7 +168,19 @@ make run-once
 
 1. Update version in `pyproject.toml`
 2. Update `CHANGELOG.md`
-3. Tag the release: `git tag v2.0.1`
-4. Push tag: `git push origin v2.0.1`
-5. Build Docker images: `make build-docker-multi`
-6. Push to registry: `make push-docker`
+3. Commit and push changes
+4. Tag the release: `git tag v2.0.1`
+5. Push tag: `git push origin v2.0.1`
+6. GitHub Actions will automatically build and push Docker images to ghcr.io
+
+## CI/CD
+
+The project uses GitHub Actions for CI/CD:
+
+- **Test workflow** (.github/workflows/test.yml): Runs on every push/PR to main/master/develop
+  - Installs dependencies with uv
+  - Runs tests and linters
+
+- **Release workflow** (.github/workflows/release.yml): Runs on version tags (v*)
+  - Builds multi-arch Docker images (amd64, arm64)
+  - Pushes images to GitHub Container Registry (ghcr.io)

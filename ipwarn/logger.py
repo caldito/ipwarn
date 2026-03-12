@@ -2,7 +2,6 @@
 
 import logging
 import sys
-from typing import Optional
 
 
 def setup_logging(level: str = "INFO") -> logging.Logger:

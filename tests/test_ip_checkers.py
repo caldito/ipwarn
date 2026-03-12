@@ -1,9 +1,6 @@
 """Tests for IP checkers."""
 
-import pytest
-from requests.exceptions import RequestException
-
-from ipwarn.ip_checkers import IPChecker, IPCheckerError
+from ipwarn.ip_checkers import IPChecker
 
 
 def test_ip_checker_initialization():

@@ -7,7 +7,7 @@ Please note we have a code of conduct, please follow it in all your interactions
 
 ## Development Setup
 
-For detailed development setup information, see [DEVELOPMENT.md](https://github.com/pablogcaldito/ipwarn/blob/master/DEVELOPMENT.md).
+For detailed development setup information, see [DEVELOPMENT.md](https://github.com/caldito/ipwarn/blob/master/DEVELOPMENT.md).
 
 Quick start:
 ```bash
@@ -25,4 +25,4 @@ make lint     # Run linters
 - Once merged into develop the project maintainers will create a new release shortly
 
 ## Code of Conduct
-Please read [CODE_OF_CONDUCT.md](https://github.com/pablogcaldito/ipwarn/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct.
+Please read [CODE_OF_CONDUCT.md](https://github.com/caldito/ipwarn/blob/master/CODE_OF_CONDUCT.md) for details on our code of conduct.

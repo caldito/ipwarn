@@ -173,7 +173,7 @@ make format
 - Config file format remains compatible with v1.x
 - CLI flags maintained (`-h`, `-v`, `-c/--config`)
 - Systemd service uses same binary path (`/usr/local/bin/ipwarn`)
-- Docker image naming: `pablogcaldito/ipwarn:2.0.0`
+- Docker images available on GitHub Container Registry: `ghcr.io/caldito/ipwarn:2.0.0`
 
 ## Next Steps for Users
 
@@ -193,10 +193,11 @@ make format
 
 ## CI/CD Updates
 
-- Updated CircleCI to use Python 3.12
+- GitHub Actions for CI/CD
+- Uses Python 3.12 for testing
 - Added pytest for testing
-- Added linters (black, ruff, mypy)
-- Maintains multi-arch builds (amd64, arm64)
+- Added linters (ruff, mypy)
+- Multi-arch Docker builds (amd64, arm64) on GitHub Container Registry
 
 ## Documentation
 

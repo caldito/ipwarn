@@ -31,13 +31,14 @@ format:         ## Format code
 	$(VENV)/bin/ruff check --fix ipwarn/ tests/
 
 build-docker:   ## Build Docker image for current architecture
-	docker build -t pablogcaldito/ipwarn:$(VERSION) .
+	docker build -t ipwarn:$(VERSION) .
 
 build-docker-multi:  ## Build Docker image for multiple architectures
-	docker buildx build --platform linux/amd64,linux/arm64 -t pablogcaldito/ipwarn:$(VERSION) .
+	docker buildx build --platform linux/amd64,linux/arm64 -t ipwarn:$(VERSION) .
 
 push-docker:    ## Push Docker image to registry
-	docker push pablogcaldito/ipwarn:$(VERSION)
+	docker tag ipwarn:$(VERSION) ghcr.io/caldito/ipwarn:$(VERSION) && \
+	docker push ghcr.io/caldito/ipwarn:$(VERSION)
 
 run:            ## Run ipwarn with default config
 	$(VENV)/bin/python -m ipwarn --config config/ipwarn.conf
