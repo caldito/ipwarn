@@ -17,7 +17,7 @@ ipwarn is a simple Dynamic DNS Update Client.
 
 ```bash
 # Get the example config from the repository or running container
-docker run --rm ghcr.io/caldito/ipwarn:2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
+docker run --rm ghcr.io/caldito/ipwarn:v2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
 
 # Edit it with your settings
 vim ipwarn.conf  # or your preferred editor
@@ -26,7 +26,7 @@ vim ipwarn.conf  # or your preferred editor
 docker run -d \
   --name ipwarn \
   --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  ghcr.io/caldito/ipwarn:2.0.0
+  ghcr.io/caldito/ipwarn:v2.0.0
 ```
 
 **Note**: An example config is available at `config/ipwarn.conf.example` in this repository and at `/etc/ipwarn/ipwarn.conf` inside the container.
@@ -41,7 +41,7 @@ To create your config:
 cp config/ipwarn.conf.example ipwarn.conf
 
 # Or from a running container
-docker run --rm ghcr.io/caldito/ipwarn:2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
+docker run --rm ghcr.io/caldito/ipwarn:v2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
 ```
 
 Then edit `ipwarn.conf` with your settings:
@@ -83,7 +83,7 @@ LOG_LEVEL=INFO
 ```bash
 docker run --rm \
   --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  ghcr.io/caldito/ipwarn:2.0.0 ipwarn --dry-run --once
+  ghcr.io/caldito/ipwarn:v2.0.0 ipwarn --dry-run --once
 ```
 
 ## CLI Options
