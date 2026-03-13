@@ -16,28 +16,35 @@ ipwarn is a simple Dynamic DNS Update Client.
 ### Docker
 
 ```bash
-# Build the image
-docker build -t ipwarn:2.0.0 .
+# Get the example config from the repository or running container
+docker run --rm ghcr.io/caldito/ipwarn:2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
 
-# Run with your config file
-docker run -d \
-  --name ipwarn \
-  --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  ipwarn:2.0.0
-```
+# Edit it with your settings
+vim ipwarn.conf  # or your preferred editor
 
-Or pull from GitHub Container Registry:
-```bash
-docker pull ghcr.io/caldito/ipwarn:2.0.0
+# Run the container with your config
 docker run -d \
   --name ipwarn \
   --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
   ghcr.io/caldito/ipwarn:2.0.0
 ```
 
+**Note**: An example config is available at `config/ipwarn.conf.example` in this repository and at `/etc/ipwarn/ipwarn.conf` inside the container.
+
 ## Configuration
 
-Create or edit `/etc/ipwarn/ipwarn.conf` with your settings:
+The example config file is available at `config/ipwarn.conf.example` in this repository or at `/etc/ipwarn/ipwarn.conf` inside the container.
+
+To create your config:
+```bash
+# From the repository
+cp config/ipwarn.conf.example ipwarn.conf
+
+# Or from a running container
+docker run --rm ghcr.io/caldito/ipwarn:2.0.0 cat /etc/ipwarn/ipwarn.conf > ipwarn.conf
+```
+
+Then edit `ipwarn.conf` with your settings:
 
 ```bash
 # Check interval in seconds (default: 30)
@@ -75,8 +82,8 @@ LOG_LEVEL=INFO
 **Tip**: Test your configuration first with `--dry-run` flag:
 ```bash
 docker run --rm \
-  --mount type=bind,source=ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
-  ghcr.io/caldito/ipwarn:2.0.0 --dry-run --once
+  --mount type=bind,source=$(pwd)/ipwarn.conf,target=/etc/ipwarn/ipwarn.conf \
+  ghcr.io/caldito/ipwarn:2.0.0 ipwarn --dry-run --once
 ```
 
 ## CLI Options
