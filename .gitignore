@@ -32,6 +32,9 @@ Thumbs.db
 # Logs
 *.log
 
+# Config files (actual configs with secrets)
+config/ipwarn.conf
+
 # Distribution / packaging
 .Python
 build/
