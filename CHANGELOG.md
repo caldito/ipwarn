@@ -5,39 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.0.0] - 2025-02-08
-
+## [2.0.0] - 2026-03-13
+[Full changelog](https://github.com/caldito/ipwarn/compare/v1.0.1...v2.0.0)
 ### Added
-- Complete rewrite in Python 3.12+ for better maintainability
-- Modular DNS provider architecture for easy extensibility
-- Porkbun DNS provider support
-- Multiple IP checker services with automatic failover:
-  - icanhazip.com
-  - ipify.org
-  - ifconfig.me
-- Structured logging with configurable log levels
-- `--once` and `--dry-run` CLI flags for testing
-- Comprehensive test suite with pytest
-- Support for multiple DNS providers simultaneously
-- Base classes for DNS providers and notifiers
+- Python 3.12+ rewrite with modular DNS provider architecture
+- GoDaddy and Porkbun DNS provider support
+- Multiple IP checker services with automatic failover
+- Telegram notifications
+- Configurable logging levels
+- `--once` and `--dry-run` CLI flags
+- Test suite with pytest
+- GitHub Actions CI/CD with automated testing
+- Multi-architecture Docker builds (AMD64, ARM64)
+- Docker images published to GitHub Container Registry (GHCR)
 
 ### Changed
-- Uses `requests` library for HTTP queries instead of curl
-- Configuration file format extended (backward compatible with v1.x)
-- Docker image now Python-based (smaller, more maintainable)
+- Migrated from Bash to Python
+- Uses `requests` library instead of curl
+- Config file format extended (backward compatible)
 - Improved error handling and retry logic
-- Better logging and debugging capabilities
+- Updated documentation
 
 ### Deprecated
-- Bash version is no longer maintained
-
-### Removed
-- Bash implementation (replaced by Python)
-
-### Fixed
-- Better handling of network failures and API errors
-- More robust IP validation
-- Cleaner separation of concerns between providers
+- Bash version no longer maintained since the project has moved to python
 
 ## [v1.0.1] - 2022-12-29
 [Full changelog](https://github.com/caldito/ipwarn/compare/v1.0.0...v1.0.1)
